@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { enhance } from '$app/forms';
-	import { goto, invalidate } from '$app/navigation';
+	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { LayoutData, SubmitFunction } from './$types';
 
@@ -15,16 +15,6 @@
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
-			}
-
-			// Workaround for automatic goto not working without setTimeout.
-			switch (event) {
-				case 'SIGNED_IN':
-					setTimeout(() => goto('/'), 0);
-					break;
-				case 'SIGNED_OUT':
-					setTimeout(() => goto('/login'), 0);
-					break;
 			}
 		});
 
