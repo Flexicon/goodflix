@@ -1,14 +1,13 @@
 <script lang="ts">
 	import '../app.css';
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import { goto, invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import type { LayoutData } from './$types';
-	import type { ActionResult } from '@sveltejs/kit';
+	import type { LayoutData, SubmitFunction } from './$types';
 
 	export let data: LayoutData;
 
-	let loading = false;
+	let signingOut = false;
 
 	$: ({ supabase, session } = data);
 
@@ -32,16 +31,14 @@
 		return () => data.subscription.unsubscribe();
 	});
 
-	function handleSignout() {
-		loading = true;
-		return async ({ result }: { result: ActionResult }) => {
-			// Workaround for automatic goto not working without setTimeout.
-			if (result.type === 'redirect') {
-				setTimeout(() => goto(result.location), 0);
-			}
-			loading = false;
+	const handleSignout: SubmitFunction = () => {
+		signingOut = true;
+
+		return ({ update }) => {
+			signingOut = false;
+			update();
 		};
-	}
+	};
 </script>
 
 <svelte:head>
@@ -55,10 +52,8 @@
 
 			<div>
 				{#if session}
-					<form method="post" action="?/signout" use:enhance={handleSignout}>
-						<div>
-							<button class="button block" disabled={loading}>Sign Out</button>
-						</div>
+					<form method="post" action="/?/signout" use:enhance={handleSignout}>
+						<button class="button block" disabled={signingOut}>Sign Out</button>
 					</form>
 				{/if}
 			</div>
