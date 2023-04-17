@@ -43,7 +43,12 @@
 			<div>
 				{#if session}
 					<form method="post" action="/?/signout" use:enhance={handleSignout}>
-						<button class="button block" disabled={signingOut}>Sign Out</button>
+						<button
+							class="button block p-2 rounded hover:bg-slate-200 disabled:opacity-30"
+							disabled={signingOut}
+						>
+							Sign Out
+						</button>
 					</form>
 				{/if}
 			</div>
