@@ -24,9 +24,9 @@
 	const handleSignout: SubmitFunction = () => {
 		signingOut = true;
 
-		return ({ update }) => {
+		return async ({ update }) => {
+			await update();
 			signingOut = false;
-			update();
 		};
 	};
 </script>
