@@ -3,6 +3,10 @@ import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname === '/ping') {
+		return new Response('pong');
+	}
+
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
@@ -11,7 +15,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	/**
 	 * A convenience helper so we can just call
-   * await getSession() instead of const { data: { session } } = await supabase.auth.getSession()
+	 * await getSession() instead of const { data: { session } } = await supabase.auth.getSession()
 	 */
 	event.locals.getSession = async () => {
 		const {
