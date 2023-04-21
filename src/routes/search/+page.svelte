@@ -37,9 +37,22 @@
 {/if}
 
 {#if !error}
-	<ul class="list-disc list-inside mt-5 ms-5">
+	<div class="grid lg:grid-cols-12 sm:grid-cols-6 grid-cols-3 gap-4">
 		{#each results as result}
-			<li>{result.title}</li>
+			<div>
+				<div>
+					{#if result.poster_path}
+						<img class="w-full" src={result.poster_path} alt={`${result.title} poster`} />
+					{:else}
+						<em class="w-full block bg-blue-100 text-gray-400 text-center py-16">
+							no image
+						</em>
+					{/if}
+				</div>
+				<div>
+					{result.title}
+				</div>
+			</div>
 		{/each}
-	</ul>
+	</div>
 {/if}
