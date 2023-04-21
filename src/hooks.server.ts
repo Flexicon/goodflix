@@ -1,4 +1,6 @@
+import { TMDB_API_KEY } from '$env/static/private';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { MoviesApi } from '$lib/server/movies-api';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import type { Handle } from '@sveltejs/kit';
 
@@ -6,6 +8,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname === '/ping') {
 		return new Response('pong');
 	}
+
+	event.locals.moviesApi = new MoviesApi(TMDB_API_KEY);
 
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
