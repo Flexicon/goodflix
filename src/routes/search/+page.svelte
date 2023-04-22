@@ -49,7 +49,7 @@
 
 <style lang="postcss">
 	.movie-poster {
-		@apply w-full flex flex-col justify-center bg-blue-50;
+		@apply w-full flex flex-col justify-center bg-white;
 
 		aspect-ratio: 2/3;
 	}
