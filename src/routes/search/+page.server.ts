@@ -1,7 +1,26 @@
 import type { MovieResult } from '$lib/types/movie';
 import type { PageServerLoad } from './$types';
 
+const HEADER_TITLES = [
+	'Watch anything good recently?',
+	'Looking for your next binge?',
+	'Picking out some classic flix?'
+];
+const SEARCH_PLACEHOLDERS = [
+	'Fight Club',
+	'Harry Potter and the Order of the Pheonix',
+	'Love Actually',
+	'Girl, Interrupted'
+];
+
+function pickRandom<T>(input: T[]): T {
+	return input[Math.floor(Math.random() * input.length)];
+}
+
 export const load: PageServerLoad = async ({ url, locals: { moviesApi } }) => {
+	const headerTitle = pickRandom(HEADER_TITLES);
+	const searchPlaceholder = pickRandom(SEARCH_PLACEHOLDERS);
+
 	const query = url.searchParams.get('q')?.trim() ?? '';
 
 	let results: MovieResult[] = [];
@@ -16,5 +35,5 @@ export const load: PageServerLoad = async ({ url, locals: { moviesApi } }) => {
 		}
 	}
 
-	return { results, query, error };
+	return { results, query, error, headerTitle, searchPlaceholder };
 };

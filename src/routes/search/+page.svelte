@@ -7,7 +7,7 @@
 
 	let selectedMovieID: number | null = null;
 
-	$: ({ query, results, error } = data);
+	$: ({ query, results, error, headerTitle, searchPlaceholder } = data);
 	$: movieSelected = !!selectedMovieID;
 
 	const onSelectMovie = (id: number) => () => {
@@ -19,10 +19,18 @@
 	};
 </script>
 
-<h1 class="text-xl font-bold">Watch anything good recently?</h1>
+<h1 class="text-xl font-bold">{headerTitle}</h1>
 
 <form class="sm:w-3/4 md:w-2/3 lg:w-1/2 m-auto my-12 flex items-center gap-1">
-	<input class="form-input" type="text" name="q" id="query" required value={query} />
+	<input
+		class="form-input"
+		type="text"
+		name="q"
+		id="query"
+		required
+		value={query}
+		placeholder={searchPlaceholder}
+	/>
 	<button class="button"><SearchIcon /></button>
 </form>
 
@@ -46,7 +54,12 @@
 
 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
 	{#each results as result}
-		<div class="movie-card" on:click={onSelectMovie(result.id)} on:keyup={onSelectMovie(result.id)}>
+		<div
+			class="movie-card"
+			aria-selected={result.id === selectedMovieID}
+			on:click={onSelectMovie(result.id)}
+			on:keyup={onSelectMovie(result.id)}
+		>
 			<div class="movie-poster">
 				{#if result.poster_path}
 					<img
@@ -73,6 +86,10 @@
 	.movie-card {
 		@apply bg-gray-50 border shadow-md rounded-md overflow-hidden;
 		@apply transition-transform hover:-translate-y-2 hover:scale-105 cursor-pointer;
+	}
+
+	.movie-card[aria-selected='true'] {
+		@apply border-2 border-amber-400 -translate-y-2 scale-105;
 	}
 
 	.movie-poster {

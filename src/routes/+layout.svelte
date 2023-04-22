@@ -71,6 +71,6 @@
 
 <style lang="postcss">
 	.link[aria-current='true']:not(:hover) {
-		@apply bg-yellow-200;
+		@apply bg-amber-300;
 	}
 </style>
