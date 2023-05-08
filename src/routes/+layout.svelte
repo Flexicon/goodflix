@@ -51,7 +51,7 @@
 						class="button primary link"
 						aria-current={$page.url.pathname === '/search'}
 					>
-						🎬 Add Movie
+						🎬 Movies
 					</a>
 					<form method="post" action="/?/signout" use:enhance={handleSignout}>
 						<button class="button" disabled={signingOut}>
