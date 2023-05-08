@@ -4,7 +4,7 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 
 ## TODO
 
-Some work that currently needs to be done:
+Some work that currently needs doing:
 
 - [ ] extract server side auth guard
 - [ ] handle search page post actions
