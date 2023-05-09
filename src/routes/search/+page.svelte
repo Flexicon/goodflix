@@ -11,7 +11,6 @@
 	$: movieSelected = !!selectedMovieID;
 
 	const onSelectMovie = (id: number) => () => {
-		(document.activeElement as HTMLInputElement)?.blur();
 		selectedMovieID = id;
 	};
 	const onCloseModal = () => {
@@ -52,7 +51,7 @@
 	</div>
 </Modal>
 
-<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+<div class="flex flex-col gap-5">
 	{#each results as result}
 		<div
 			class="movie-card"
@@ -66,13 +65,20 @@
 						class="w-full h-full object-cover"
 						src={result.poster_path}
 						alt={`${result.title} poster`}
+						title={result.title}
 					/>
 				{:else}
 					<span class="text-gray-400 text-center">no image</span>
 				{/if}
 			</div>
-			<div class="p-2 leading-tight font-medium">
-				{result.title}
+			<div class="py-3 px-4">
+				<div class="mb-1 leading-tight font-medium text-lg line-clamp-2" title={result.title}>
+					{result.title}
+				</div>
+				<div class="mb-4 text-gray-400 text-sm">
+					{result.release_date}
+				</div>
+				<p class="line-clamp-3">{result.overview}</p>
 			</div>
 		</div>
 	{/each}
@@ -84,16 +90,17 @@
 
 <style lang="postcss">
 	.movie-card {
+		@apply grid grid-cols-[minmax(120px,10%)_1fr];
 		@apply bg-gray-50 border shadow-md rounded-md overflow-hidden;
-		@apply transition-transform hover:-translate-y-2 hover:scale-105 cursor-pointer;
+		@apply transition-transform hover:scale-105 cursor-pointer;
 	}
 
 	.movie-card[aria-selected='true'] {
-		@apply border-2 border-amber-400 -translate-y-2 scale-105;
+		@apply scale-105;
 	}
 
 	.movie-poster {
-		@apply w-full flex flex-col justify-center bg-white;
+		@apply flex flex-col justify-center bg-white;
 
 		aspect-ratio: 2/3;
 	}

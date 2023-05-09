@@ -7,7 +7,8 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 Some work that currently needs doing:
 
 - [x] ~~extract server side auth guard~~
-- [ ] refactor search results page to be single column with card contents laid out horizontally
+- [x] ~~refactor search results page to be single column with card contents laid out horizontally~~
+- [ ] add date formatting to search results
 - [ ] handle search page post actions
   - add to individual watch lists
   - option to remove movies from lists immediately after adding them
