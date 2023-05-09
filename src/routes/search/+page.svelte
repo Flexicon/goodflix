@@ -10,6 +10,9 @@
 	$: ({ query, results, error, headerTitle, searchPlaceholder } = data);
 	$: movieSelected = !!selectedMovieID;
 
+	const formatDate = (date: string): string =>
+		new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(date));
+
 	const onSelectMovie = (id: number) => () => {
 		selectedMovieID = id;
 	};
@@ -76,7 +79,7 @@
 					{result.title}
 				</div>
 				<div class="mb-4 text-gray-400 text-sm">
-					{result.release_date}
+					{formatDate(result.release_date)}
 				</div>
 				<p class="line-clamp-3">{result.overview}</p>
 			</div>

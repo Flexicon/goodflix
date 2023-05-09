@@ -28,6 +28,6 @@ export interface MovieResult {
 	id: number;
 	overview: string | null;
 	poster_path: string | null;
-	release_date: Date;
+	release_date: string;
 	title: string;
 }

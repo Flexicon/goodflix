@@ -8,7 +8,7 @@ Some work that currently needs doing:
 
 - [x] ~~extract server side auth guard~~
 - [x] ~~refactor search results page to be single column with card contents laid out horizontally~~
-- [ ] add date formatting to search results
+- [x] ~~add date formatting to search results~~
 - [ ] handle search page post actions
   - add to individual watch lists
   - option to remove movies from lists immediately after adding them
