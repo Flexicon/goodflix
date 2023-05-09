@@ -6,7 +6,7 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 
 Some work that currently needs doing:
 
-- [ ] extract server side auth guard
+- [x] ~~extract server side auth guard~~
 - [ ] refactor search results page to be single column with card contents laid out horizontally
 - [ ] handle search page post actions
   - add to individual watch lists
