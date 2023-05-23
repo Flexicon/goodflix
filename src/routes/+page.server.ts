@@ -1,5 +1,15 @@
 import { redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ locals: { dataStore } }) => {
+	const moviesWatched = await dataStore.watchedMovies();
+	const moviesToBeWatched = await dataStore.toBeWatchedMovies();
+
+	return {
+		moviesWatched,
+		moviesToBeWatched
+	};
+};
 
 export const actions = {
 	signout: async ({ locals: { supabase, getSession } }) => {
