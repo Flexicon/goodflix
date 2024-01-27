@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { DataStore, MoviesApi } from '$lib/server';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
+import { createClient } from '@supabase/supabase-js';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -9,15 +10,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return new Response('pong');
 	}
 
-	event.locals.moviesApi = new MoviesApi(env.TMDB_API_KEY);
-
 	const supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
 		event
 	});
+	const adminSupabaseApi = createClient(PUBLIC_SUPABASE_URL, env.ADMIN_SUPABASE_KEY, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false
+		}
+	}).auth.admin;
 	event.locals.supabase = supabase;
-	event.locals.dataStore = new DataStore(supabase);
 
 	/**
 	 * A convenience helper so we can just call
@@ -29,6 +33,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		} = await event.locals.supabase.auth.getSession();
 		return session;
 	};
+
+	/**
+	 * Inject global services as locals.
+	 */
+	event.locals.moviesApi = new MoviesApi(env.TMDB_API_KEY);
+	event.locals.dataStore = new DataStore(supabase, adminSupabaseApi, event.locals.getSession);
 
 	return resolve(event, {
 		/**

@@ -2,8 +2,10 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { dataStore } }) => {
-	const moviesWatched = await dataStore.watchedMovies();
-	const moviesToBeWatched = await dataStore.toBeWatchedMovies();
+	const [moviesWatched, moviesToBeWatched] = await Promise.all([
+		dataStore.watchedMovies(),
+		dataStore.toBeWatchedMovies()
+	]).then((results) => dataStore.enhanceUsersInMovieLists(...results));
 
 	return {
 		moviesWatched,
