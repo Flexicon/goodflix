@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals: { dataStore } }) => {
 	const [moviesWatched, moviesToBeWatched] = await Promise.all([
 		dataStore.watchedMovies(),
 		dataStore.toBeWatchedMovies()
-	]).then((results) => dataStore.enhanceUsersInMovieLists(...results));
+	]);
 
 	return {
 		moviesWatched,

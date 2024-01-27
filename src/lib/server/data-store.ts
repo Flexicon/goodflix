@@ -1,77 +1,24 @@
-import type {
-	GoTrueAdminApi,
-	PostgrestResponse,
-	Session,
-	SupabaseClient
-} from '@supabase/supabase-js';
+import type { PostgrestResponse, Session, SupabaseClient } from '@supabase/supabase-js';
 
 type SessionGetter = () => Promise<Session | null>;
 
 export class DataStore {
-	constructor(
-		private supabase: SupabaseClient,
-		private admin: GoTrueAdminApi,
-		private getSession: SessionGetter
-	) {}
+	constructor(private supabase: SupabaseClient, private getSession: SessionGetter) {}
 
 	async watchedMovies(): Promise<ListedMovie[]> {
 		return await this.supabase
 			.from('movies')
-			.select('*, watchers:watched!inner (id, user_id)')
+			.select('*, watchers:watched!inner (id, user_id, profile:profiles(username))')
 			.then(this.handleDBError)
-			.then((response) => response.data as ListedMovie[]);
+			.then((response) => this.mapMoviesToListed(response.data as MovieQueryRecord[]));
 	}
 
 	async toBeWatchedMovies(): Promise<ListedMovie[]> {
 		return await this.supabase
 			.from('movies')
-			.select('*, watchers:to_be_watched!inner (id, user_id)')
+			.select('*, watchers:to_be_watched!inner (id, user_id, profile:profiles(username))')
 			.then(this.handleDBError)
-			.then((response) => response.data as ListedMovie[]);
-	}
-
-	/**
-	 * Fetches user names and sets them for respective users nested under the given movie lists in place.
-	 *
-	 * Sets 'You' as the name for the currently authenticated user.
-	 */
-	async enhanceUsersInMovieLists(...movieLists: ListedMovie[][]) {
-		const movies = movieLists.flat();
-		const userNamesMap = await this.userNamesForList(movies);
-
-		const userID = await this.getSession().then((s) => s?.user.id);
-		const getDisplayName = (id: string) => (id === userID ? 'You' : userNamesMap[id]);
-
-		for (const movie of movies) {
-			for (const watcher of movie.watchers) {
-				watcher.user_name = getDisplayName(watcher.user_id);
-			}
-		}
-
-		return movieLists;
-	}
-
-	private async userNamesForList(movies: ListedMovie[]) {
-		const userIDs = movies.map((movie) => movie.watchers.map((w) => w.user_id)).flat();
-		return await this.userNames([...new Set(userIDs)]);
-	}
-
-	private async userNames(ids: string[]): Promise<Record<string, string>> {
-		const users = await this.usersByIDs(ids);
-		const map = Object.fromEntries(ids.map((id) => [id, 'Unknown']));
-
-		for (const user of users) {
-			if (user.email) {
-				map[user.id] = user.email.split('@')[0];
-			}
-		}
-		return map;
-	}
-
-	private async usersByIDs(ids: string[]) {
-		return await this.admin
-			.listUsers({ perPage: 100 })
-			.then((response) => response.data.users.filter((user) => ids.includes(user.id)));
+			.then((response) => this.mapMoviesToListed(response.data as MovieQueryRecord[]));
 	}
 
 	private handleDBError<T extends PostgrestResponse<unknown>>(response: T): T {
@@ -80,6 +27,22 @@ export class DataStore {
 			throw new Error(response.error.message);
 		}
 		return response;
+	}
+
+	private async mapMoviesToListed(movies: MovieQueryRecord[]): Promise<ListedMovie[]> {
+		const session = await this.getSession();
+
+		return movies.map((m) => {
+			const { watchers, ...movie } = m;
+
+			return {
+				...movie,
+				watchers: watchers.map((w) => ({
+					isCurrentUser: w.user_id === session?.user.id,
+					username: w.profile.username ?? 'Unknown'
+				}))
+			};
+		});
 	}
 }
 
@@ -92,10 +55,16 @@ export interface StoredMovie {
 	poster_url: string;
 }
 
+interface MovieQueryRecord extends StoredMovie {
+	watchers: {
+		user_id: string;
+		profile: { username: string };
+	}[];
+}
+
 export interface ListedMovie extends StoredMovie {
 	watchers: {
-		id: number;
-		user_id: string;
-		user_name?: string;
+		isCurrentUser: boolean;
+		username: string;
 	}[];
 }

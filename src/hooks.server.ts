@@ -10,18 +10,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return new Response('pong');
 	}
 
-	const supabase = createSupabaseServerClient({
+	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
 		event
 	});
-	const adminSupabaseApi = createClient(PUBLIC_SUPABASE_URL, env.ADMIN_SUPABASE_KEY, {
+	event.locals.supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, env.ADMIN_SUPABASE_KEY, {
 		auth: {
 			autoRefreshToken: false,
 			persistSession: false
 		}
-	}).auth.admin;
-	event.locals.supabase = supabase;
+	});
 
 	/**
 	 * A convenience helper so we can just call
@@ -35,10 +34,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	/**
+	 * A convenience helper so we can just call
+	 * await getUser() instead of const { data: { user } } = await supabase.auth.getUser()
+	 */
+	event.locals.getUser = async () => {
+		const {
+			data: { user }
+		} = await event.locals.supabase.auth.getUser();
+		return user;
+	};
+
+	/**
 	 * Inject global services as locals.
 	 */
 	event.locals.moviesApi = new MoviesApi(env.TMDB_API_KEY);
-	event.locals.dataStore = new DataStore(supabase, adminSupabaseApi, event.locals.getSession);
+	event.locals.dataStore = new DataStore(event.locals.supabase, event.locals.getSession);
 
 	return resolve(event, {
 		/**
