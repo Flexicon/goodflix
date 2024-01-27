@@ -39,12 +39,12 @@
 
 <div class="mx-auto w-[1200px] max-w-full transition-opacity duration-700 opacity-100">
 	<div class="p-6">
-		<div class="mb-5 flex justify-between">
-			<h1 class="text-3xl font-bold">
+		<div class="mb-5 flex justify-between items-center">
+			<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">
 				<a href="/">🍿 GoodFlix</a>
 			</h1>
 
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-2 text-xs sm:text-base">
 				{#if session}
 					<a
 						href="/search"
