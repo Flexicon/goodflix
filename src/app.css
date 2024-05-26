@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 .button {
-	@apply bg-slate-200 p-2 rounded-md hover:bg-slate-300 disabled:opacity-30;
-	@apply flex items-center justify-center gap-1;
+	@apply bg-slate-200 py-2 px-3 rounded-md hover:bg-slate-300 disabled:opacity-30;
+	@apply inline-flex items-center justify-center gap-1 border border-slate-200 hover:border-slate-300;
 }
 .button.primary {
-	@apply bg-amber-200 hover:bg-amber-300;
+	@apply bg-amber-200 hover:bg-amber-300 border border-amber-200 hover:border-amber-300;
 }
 
 .form-input {
 	@apply bg-gray-50 border border-gray-300 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+}
+
+.form-input:disabled {
+	@apply bg-gray-200 text-gray-500 cursor-not-allowed;
 }

@@ -1,9 +1,25 @@
-import type { PostgrestResponse, Session, SupabaseClient } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse, Session, SupabaseClient } from '@supabase/supabase-js';
 
 type SessionGetter = () => Promise<Session | null>;
 
 export class DataStore {
 	constructor(private supabase: SupabaseClient, private getSession: SessionGetter) {}
+
+	async userProfile(): Promise<UserProfile> {
+		const { data: profile } = await this.supabase
+			.from('profiles')
+			.select('id, username, email')
+			.single();
+
+		if (!profile) throw new Error('Profile not found for current user');
+
+		return profile;
+	}
+
+	async updateUsername(username: string): Promise<void> {
+		const { id } = await this.userProfile();
+		await this.supabase.from('profiles').update({ username }).eq('id', id).then(this.handleDBError);
+	}
 
 	async watchedMovies(): Promise<ListedMovie[]> {
 		return await this.supabase
@@ -21,7 +37,7 @@ export class DataStore {
 			.then((response) => this.mapMoviesToListed(response.data as MovieQueryRecord[]));
 	}
 
-	private handleDBError<T extends PostgrestResponse<unknown>>(response: T): T {
+	private handleDBError<T extends PostgrestSingleResponse<unknown>>(response: T): T {
 		if (response.error) {
 			console.error(response.error);
 			throw new Error(response.error.message);
@@ -46,6 +62,12 @@ export class DataStore {
 	}
 }
 
+export interface UserProfile {
+	id: string;
+	username: string;
+	email: string;
+}
+
 export interface StoredMovie {
 	id: number;
 	external_id: number;
@@ -58,7 +80,7 @@ export interface StoredMovie {
 interface MovieQueryRecord extends StoredMovie {
 	watchers: {
 		user_id: string;
-		profile: { username: string };
+		profile: Pick<UserProfile, 'username'>;
 	}[];
 }
 

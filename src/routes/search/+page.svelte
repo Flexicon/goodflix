@@ -10,8 +10,13 @@
 	$: ({ query, results, error, headerTitle, searchPlaceholder } = data);
 	$: movieSelected = !!selectedMovieID;
 
-	const formatDate = (date: string): string =>
-		new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(date));
+	const formatDate = (date: string): string => {
+		try {
+			return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(date));
+		} catch (err) {
+			return 'unknown';
+		}
+	};
 
 	const onSelectMovie = (id: number) => () => {
 		selectedMovieID = id;
