@@ -15,7 +15,9 @@
 				/>
 			</svg>
 		</div>
-		<h1 class="text-4xl font-bold text-gray-900 dark:text-gray-50">Oops! Something went wrong.</h1>
+		<h1 class="text-4xl font-serif font-bold text-gray-900 dark:text-gray-50">
+			Oops! Something went wrong.
+		</h1>
 		<p class="text-gray-600 dark:text-gray-400">
 			It looks like our movie reels got tangled up.<br />
 			Don't worry, we'll have this fixed in a jiffy!
