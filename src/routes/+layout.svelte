@@ -14,8 +14,8 @@
 	$: ({ supabase, session } = data);
 
 	onMount(() => {
-		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
-			if (_session?.expires_at !== session?.expires_at) {
+		const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
+			if (newSession?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
 			}
 		});
@@ -34,7 +34,11 @@
 </script>
 
 <svelte:head>
-	<title>GoodFlix</title>
+	{#if $page.data.meta?.title}
+		<title>{$page.data.meta.title} - Goodflix</title>
+	{:else}
+		<title>Goodflix</title>
+	{/if}
 </svelte:head>
 
 <div class="mx-auto w-[1200px] max-w-full transition-opacity duration-700 opacity-100">

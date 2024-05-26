@@ -6,15 +6,6 @@
 	export let data: PageData;
 </script>
 
-<svelte:head>
-	<title>GoodFlix - Login</title>
-</svelte:head>
-
 <div class="mx-auto w-[500px] max-w-full pt-5">
-	<Auth
-		supabaseClient={data.supabase}
-		redirectTo={`${data.url}/logging-in?redirect=/`}
-		appearance={{ theme: ThemeSupa }}
-		magicLink
-	/>
+	<Auth supabaseClient={data.supabase} appearance={{ theme: ThemeSupa }} magicLink />
 </div>

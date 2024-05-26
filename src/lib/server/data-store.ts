@@ -1,11 +1,11 @@
-import type { PostgrestSingleResponse, SupabaseClient, User } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse, Session, SupabaseClient, User } from '@supabase/supabase-js';
 
-type AuthedUserGetter = () => Promise<User | null>;
+type SessionGetter = () => Promise<{ session: Session | null; user: User | null }>;
 
 export class DataStore {
 	constructor(
 		private supabase: SupabaseClient,
-		private getUser: AuthedUserGetter
+		private getSession: SessionGetter
 	) {}
 
 	async userProfile(): Promise<UserProfile> {
@@ -49,7 +49,7 @@ export class DataStore {
 	}
 
 	private async mapMoviesToListed(movies: MovieQueryRecord[]): Promise<ListedMovie[]> {
-		const user = await this.getUser();
+		const { user } = await this.getSession();
 
 		return movies.map((m) => {
 			const { watchers, ...movie } = m;

@@ -14,10 +14,8 @@ export const load: PageServerLoad = async ({ locals: { dataStore } }) => {
 };
 
 export const actions = {
-	signout: async ({ locals: { supabase, getUser } }) => {
-		if (await getUser()) {
-			await supabase.auth.signOut();
-			redirect(303, '/login');
-		}
+	signout: async ({ locals: { supabase, safeGetSession } }) => {
+		await supabase.auth.signOut();
+		return redirect(303, '/auth');
 	}
 } satisfies Actions;
