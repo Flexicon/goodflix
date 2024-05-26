@@ -24,17 +24,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	/**
 	 * A convenience helper so we can just call
-	 * await getSession() instead of const { data: { session } } = await supabase.auth.getSession()
-	 */
-	event.locals.getSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-		return session;
-	};
-
-	/**
-	 * A convenience helper so we can just call
 	 * await getUser() instead of const { data: { user } } = await supabase.auth.getUser()
 	 */
 	event.locals.getUser = async () => {
@@ -48,7 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * Inject global services as locals.
 	 */
 	event.locals.moviesApi = new MoviesApi(env.TMDB_API_KEY);
-	event.locals.dataStore = new DataStore(event.locals.supabase, event.locals.getSession);
+	event.locals.dataStore = new DataStore(event.locals.supabase, event.locals.getUser);
 
 	return resolve(event, {
 		/**

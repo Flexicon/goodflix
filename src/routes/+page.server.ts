@@ -14,11 +14,10 @@ export const load: PageServerLoad = async ({ locals: { dataStore } }) => {
 };
 
 export const actions = {
-	signout: async ({ locals: { supabase, getSession } }) => {
-		const session = await getSession();
-		if (session) {
+	signout: async ({ locals: { supabase, getUser } }) => {
+		if (await getUser()) {
 			await supabase.auth.signOut();
-			throw redirect(303, '/login');
+			redirect(303, '/login');
 		}
 	}
 } satisfies Actions;

@@ -1,34 +1,34 @@
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import type { UserProfile } from '$lib/server';
-import type { Session } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
 
 export const load: LayoutServerLoad = async (event) => {
-	const session = await event.locals.getSession();
-	const shouldRedirectToLogin = buildRedirectToLoginCheck(session, event);
-	const shouldRedirectToProfile = buildRedirectToProfileCheck(session, event);
+	const user = await event.locals.getUser();
+	const shouldRedirectToLogin = buildRedirectToLoginCheck(user, event);
+	const shouldRedirectToProfile = buildRedirectToProfileCheck(user, event);
 
 	// If the user is not logged in or currently logging in, redirect them to login page.
 	if (shouldRedirectToLogin()) {
-		throw redirect(303, '/login');
+		redirect(303, '/login');
 	}
 
 	// If the user is logged in but not on the profile page, check whether they need to
 	// fill out their profile details.
 	if (await shouldRedirectToProfile()) {
-		throw redirect(303, '/profile?setup');
+		redirect(303, '/profile?setup');
 	}
 
 	return {
-		session
+		user
 	};
 };
 
-const buildRedirectToLoginCheck = (session: Session | null, event: ServerLoadEvent) => () =>
-	!session && urlIsNoneOf(event.url, '/login', '/logging-in');
+const buildRedirectToLoginCheck = (user: User | null, event: ServerLoadEvent) => () =>
+	!user && urlIsNoneOf(event.url, '/login', '/logging-in');
 
-const buildRedirectToProfileCheck = (session: Session | null, event: ServerLoadEvent) => async () =>
-	!!session &&
+const buildRedirectToProfileCheck = (user: User | null, event: ServerLoadEvent) => async () =>
+	!!user &&
 	urlIsNoneOf(event.url, '/profile') &&
 	isProfileDataMissing(await event.locals.dataStore.userProfile());
 

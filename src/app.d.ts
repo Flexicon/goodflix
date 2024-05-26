@@ -8,7 +8,6 @@ declare global {
 		interface Locals {
 			supabase: SupabaseClient;
 			supabaseAdmin: SupabaseClient;
-			getSession(): Promise<Session | null>;
 			getUser(): Promise<User | null>;
 			moviesApi: MoviesApi;
 			dataStore: DataStore;
